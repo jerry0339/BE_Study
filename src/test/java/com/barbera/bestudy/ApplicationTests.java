@@ -1,4 +1,4 @@
-package com.barbera.BE_Study;
+package com.barbera.bestudy;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,3 +11,4 @@ class ApplicationTests {
 	}
 
 }
+
