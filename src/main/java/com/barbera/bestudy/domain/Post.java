@@ -1,4 +1,4 @@
-package com.barbera.bestudy;
+package com.barbera.bestudy.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

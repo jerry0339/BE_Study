@@ -1,4 +1,4 @@
-package com.barbera.bestudy;
+package com.barbera.bestudy.domain;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
