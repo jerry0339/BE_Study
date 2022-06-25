@@ -49,7 +49,10 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                 // Note: 쿠키 기반의 자동로그인(remember-me) 활성화, 저장된 쿠키가 있으면 autoLogin
                 .rememberMeParameter("remember-me")
                 .tokenValiditySeconds(300)
-                //.and()
+//                .and()
+//            .requiresChannel()
+//                // Note: 모든 요청이 HTTPS로 동작해야만 하도록 설정
+//                .anyRequest().requiresSecure()
         ;
     }
 

@@ -3,11 +3,6 @@ spring:
     name: spring security 01
   thymeleaf:
     cache: true
-  security:
-#    user:
-#      name: jerry
-#      password: jerry123
-#      roles: USER
   messages:
     basename: i18n/messages
     encoding: UTF-8
@@ -21,6 +16,11 @@ spring:
 #      hibernate:
 #        dialect: org.hibernate.dialect.PostgreSQLDialect
 #        ddl-auto: update
+  security:
+#    user:
+#      name: jerry
+#      password: jerry123
+#      roles: USER
 server:
   servlet:
     encoding:
