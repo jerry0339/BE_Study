@@ -1,5 +1,7 @@
 package com.barbera.bestudy.configures;
 
+import com.barbera.bestudy.oauth2.OAuth2AuthenticationSuccessHandler;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +24,13 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
         ;
     }
 
+    @Bean
+    public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler() {
+        return new OAuth2AuthenticationSuccessHandler();
+    }
+
     @Override
+
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/assets/**");
     }
@@ -31,28 +39,31 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/me").hasAnyRole("USER", "ADMIN")
-                .anyRequest().permitAll()
-                .and()
+            .antMatchers("/me").hasAnyRole("USER", "ADMIN")
+            .anyRequest().permitAll()
+            .and()
             .formLogin()
-                .defaultSuccessUrl("/")
-                .permitAll()
-                .and()
+            .defaultSuccessUrl("/")
+            .permitAll()
+            .and()
             .logout()
-                // Note: 아래의 4개의 체인메서드는 Logout Filter에서 default값으로 설정된 값이므로 삭제해도 ㄱㅊ
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .and()
+            // Note: 아래의 4개의 체인메서드는 Logout Filter에서 default값으로 설정된 값이므로 삭제해도 ㄱㅊ
+            .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+            .logoutSuccessUrl("/")
+            .invalidateHttpSession(true)
+            .clearAuthentication(true)
+            .and()
             .rememberMe()
-                // Note: 쿠키 기반의 자동로그인(remember-me) 활성화, 저장된 쿠키가 있으면 autoLogin
-                .rememberMeParameter("remember-me")
-                .tokenValiditySeconds(300)
+            // Note: 쿠키 기반의 자동로그인(remember-me) 활성화, 저장된 쿠키가 있으면 autoLogin
+            .rememberMeParameter("remember-me")
+            .tokenValiditySeconds(300)
 //                .and()
 //            .requiresChannel()
 //                // Note: 모든 요청이 HTTPS로 동작해야만 하도록 설정
 //                .anyRequest().requiresSecure()
+            .and()
+            .oauth2Login()
+            .successHandler(oAuth2AuthenticationSuccessHandler()) // OAuth2 인증 이후 핸들러 호출
         ;
     }
 
