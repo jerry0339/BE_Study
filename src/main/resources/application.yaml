@@ -40,4 +40,12 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-  port: 8080
+  port: 443
+  ssl:
+    enabled: true
+    key-alias: barbera_keystore
+    key-store: classpath:barbera_keystore.p12
+    key-store-password: barbera123
+    key-password: barbera123
+    trust-store: classpath:barbera_truststore.p12
+    trust-store-password: barbera123

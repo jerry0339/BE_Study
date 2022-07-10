@@ -39,31 +39,33 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .antMatchers("/me").hasAnyRole("USER", "ADMIN")
-            .anyRequest().permitAll()
-            .and()
+                .antMatchers("/me").hasAnyRole("USER", "ADMIN")
+                .anyRequest().permitAll()
+                .and()
             .formLogin()
-            .defaultSuccessUrl("/")
-            .permitAll()
-            .and()
+                .defaultSuccessUrl("/")
+                .permitAll()
+                .and()
             .logout()
-            // Note: 아래의 4개의 체인메서드는 Logout Filter에서 default값으로 설정된 값이므로 삭제해도 ㄱㅊ
-            .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-            .logoutSuccessUrl("/")
-            .invalidateHttpSession(true)
-            .clearAuthentication(true)
-            .and()
+                // Note: 아래의 4개의 체인메서드는 Logout Filter에서 default값으로 설정된 값이므로 삭제해도 ㄱㅊ
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .and()
             .rememberMe()
-            // Note: 쿠키 기반의 자동로그인(remember-me) 활성화, 저장된 쿠키가 있으면 autoLogin
-            .rememberMeParameter("remember-me")
-            .tokenValiditySeconds(300)
-//                .and()
-//            .requiresChannel()
-//                // Note: 모든 요청이 HTTPS로 동작해야만 하도록 설정
-//                .anyRequest().requiresSecure()
-            .and()
+                // Note: 쿠키 기반의 자동로그인(remember-me) 활성화, 저장된 쿠키가 있으면 autoLogin
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(300)
+                .and()
+            .requiresChannel()
+//                .antMatchers("/api/**").requiresSecure() // Note: /api 하위경로 요청이 HTTPS로 동작하도록 설정
+                .anyRequest().requiresSecure() // Note: 모든 요청이 HTTPS로 동작해야만 하도록 설정
+                .and()
+
+            // Note: 해당 필터에 요청이 도달할때까지 사용자가 인증되지 않았다면, 사용자를 null 대신 Anonymous 인증 타입으로 표현
             .oauth2Login()
-            .successHandler(oAuth2AuthenticationSuccessHandler()) // OAuth2 인증 이후 핸들러 호출
+                .successHandler(oAuth2AuthenticationSuccessHandler()) // OAuth2 인증 이후 핸들러 호출
         ;
     }
 
