@@ -72,12 +72,13 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/api/**").requiresSecure() // /api 하위경로 요청이 HTTPS로 동작하도록 설정
                 .anyRequest().requiresSecure() // 모든 요청이 HTTPS로 동작해야만 하도록 설정
                 .and()
-            // Note: (AnonymousAuthenticationFilter) 에 요청이 도달할때까지 사용자가 인증되지 않았다면, 사용자를 null 대신 Anonymous 인증 타입으로 표현해 줌
+            // Note: (AnonymousAuthenticationFilter)에 요청이 도달할때까지 사용자가 인증되지 않았다면, 사용자를 null 대신 Anonymous 인증 타입으로 표현해 줌
             .anonymous()
                 .principal("thisIsAnonymousUser") // default: anonymousUser
                 .authorities("ROLE_ANONYMOUS", "ROLE_UNKNOWN") // default: ROLE_ANONYMOUS 한개
                 .and()
-
+            // Note: (ExceptionTranslationFilter)에 핸들러 추가
+            //  주의 - ExceptionTranslationFilter 하위에 있는 Filter에 대해서만 핸들링이 가능함 (ex - FilterSecurityInterceptor)
             .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler())
                 .and()
