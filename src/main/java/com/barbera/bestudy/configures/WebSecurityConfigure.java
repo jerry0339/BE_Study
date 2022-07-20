@@ -11,36 +11,72 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfigure { //  extends WebSecurityConfigurerAdapter
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Override
-    // Note : AuthenticationManagerBuilder를 이용하면 로그인 가능한 계정을 추가해 줄 수 있음
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-            .withUser("user").password("{noop}user123").roles("USER")
-            .and()
-            .withUser("admin").password("{noop}admin123").roles("ADMIN")
-        ;
+//    @Override
+//    // Bug :  deprecated
+//    // Note : AuthenticationManagerBuilder를 이용하면 로그인 가능한 계정을 추가해 줄 수 있음
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.inMemoryAuthentication()
+//            .withUser("user").password("{noop}user123").roles("USER")
+//            .and()
+//            .withUser("admin").password("{noop}admin123").roles("ADMIN")
+//        ;
+//    }
+
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        UserDetails user = User.withDefaultPasswordEncoder()
+//            .username("user")
+//            .password("password")
+//            .roles("USER")
+//            .build();
+//        auth.inMemoryAuthentication()
+//            .withUser(user);
+//    }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        UserDetails user = User
+            .withUsername("user")
+            .password("password")
+            .roles("USER")
+            .build();
+        return new InMemoryUserDetailsManager(user);
     }
 
-    @Override
+//    @Override
+//    // Bug :  deprecated
+//    // Note : 해당 경로의 파일들은 필터를 거치지 않도록 설정함
+//    public void configure(WebSecurity web) {
+//        web.ignoring().antMatchers("/assets/**");
+//    }
+    @Bean
     // Note : 해당 경로의 파일들은 필터를 거치지 않도록 설정함
-    public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/assets/**");
+    public WebSecurityCustomizer webSecurityCustomizer() {
+         return (web) -> web.ignoring().antMatchers("/assets/**");
     }
 
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+//    @Override
+//    // Bug :  deprecated
+//    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             // Note: 권한 설정
             .authorizeRequests()
@@ -68,10 +104,10 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                 .tokenValiditySeconds(300)
                 .and()
             // Note: 전송 레이어 보안 적용 (ChannelProcessingFilter) - HTTPS 채널을 통해 처리해야 하는 웹 요청을 정의
-            .requiresChannel()
-//                .antMatchers("/api/**").requiresSecure() // /api 하위경로 요청이 HTTPS로 동작하도록 설정
-                .anyRequest().requiresSecure() // 모든 요청이 HTTPS로 동작해야만 하도록 설정
-                .and()
+//            .requiresChannel()
+////                .antMatchers("/api/**").requiresSecure() // /api 하위경로 요청이 HTTPS로 동작하도록 설정
+//                .anyRequest().requiresSecure() // 모든 요청이 HTTPS로 동작해야만 하도록 설정
+//                .and()
             // Note: (AnonymousAuthenticationFilter)에 요청이 도달할때까지 사용자가 인증되지 않았다면, 사용자를 null 대신 Anonymous 인증 타입으로 표현해 줌
             .anonymous()
                 .principal("thisIsAnonymousUser") // default: anonymousUser
@@ -86,6 +122,7 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
             .oauth2Login()
                 .successHandler(oAuth2AuthenticationSuccessHandler()) // OAuth2 인증 이후 핸들러 호출
         ;
+        return http.build();
     }
 
     @Bean
