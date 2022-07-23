@@ -6,16 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -27,54 +27,24 @@ public class WebSecurityConfigure { //  extends WebSecurityConfigurerAdapter
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-//    @Override
-//    // Bug :  deprecated
-//    // Note : AuthenticationManagerBuilder를 이용하면 로그인 가능한 계정을 추가해 줄 수 있음
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//            .withUser("user").password("{noop}user123").roles("USER")
-//            .and()
-//            .withUser("admin").password("{noop}admin123").roles("ADMIN")
-//        ;
-//    }
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        UserDetails user = User.withDefaultPasswordEncoder()
-//            .username("user")
-//            .password("password")
-//            .roles("USER")
-//            .build();
-//        auth.inMemoryAuthentication()
-//            .withUser(user);
-//    }
-
     @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user = User
-            .withUsername("user")
-            .password("password")
-            .roles("USER")
-            .build();
-        return new InMemoryUserDetailsManager(user);
+    public UserDetailsService userDetailsService2()
+    {
+        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        User.UserBuilder userBuilder = User.builder().passwordEncoder(encoder::encode);
+        UserDetails user = userBuilder.username("user").password("user123")
+            .roles("USER").build();
+        UserDetails admin = userBuilder.username("admin").password("admin123")
+            .roles("USER","ADMIN").build();
+        return new InMemoryUserDetailsManager(user, admin);
     }
 
-//    @Override
-//    // Bug :  deprecated
-//    // Note : 해당 경로의 파일들은 필터를 거치지 않도록 설정함
-//    public void configure(WebSecurity web) {
-//        web.ignoring().antMatchers("/assets/**");
-//    }
     @Bean
     // Note : 해당 경로의 파일들은 필터를 거치지 않도록 설정함
     public WebSecurityCustomizer webSecurityCustomizer() {
          return (web) -> web.ignoring().antMatchers("/assets/**");
     }
 
-
-//    @Override
-//    // Bug :  deprecated
-//    protected void configure(HttpSecurity http) throws Exception {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
