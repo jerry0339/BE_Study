@@ -40,7 +40,7 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-#  port: 443
+  port: 8080
 #  ssl:
 #    enabled: true
 #    key-alias: barbera_keystore
