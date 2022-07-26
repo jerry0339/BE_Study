@@ -12,4 +12,4 @@ ${AnsiColor.RED}
 
 
 ${AnsiColor.BRIGHT_GREEN}Spring Boot ${AnsiColor.RED}${spring-boot.formatted-version}
-${AnsiColor.BRIGHT_GREEN}Author Jerry (jcu011@naver.com)
+${AnsiColor.BRIGHT_GREEN}Author Jerry (jerry0339@naver.com)
